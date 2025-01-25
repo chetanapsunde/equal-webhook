@@ -4,6 +4,7 @@ import path from 'path';
 import { logger } from '../utils/logging.js';
 import { trimString } from './DFchipsToButtons.js';
 import { checkFileAvailability } from '../CloudStorage/checkFileReadyness.js';
+import { GoogleAuth } from 'google-auth-library';
 
 async function callWhatsAppAPI(data, phone_number_id) {
   let config = {
@@ -25,6 +26,31 @@ async function callWhatsAppAPI(data, phone_number_id) {
       logger.error(error);
     });
 }
+async function callWhatsAppFunction(data, phone_number_id) {
+  const auth = new GoogleAuth();
+  const client = await auth.getIdTokenClient(targetUrl);
+  const idToken = await client.fetchIdToken();
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${idToken}`);
+
+  const raw = JSON.stringify({
+    "data": data,
+    "phone_number_id": phone_number_id
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+  };
+
+  fetch("https://asia-south1-atmprebuiltagent.cloudfunctions.net/sendWhatsAppMsg", requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
+}
 
 export async function sendWatsAppText(textResponse, to, phone_number_id) {
   let data = JSON.stringify({
@@ -38,7 +64,7 @@ export async function sendWatsAppText(textResponse, to, phone_number_id) {
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 export async function sendWatsAppReplyText(textResponse, message_id, to, phone_number_id) {
   if (message_id == null) {
@@ -59,7 +85,7 @@ export async function sendWatsAppReplyText(textResponse, message_id, to, phone_n
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 export async function sendWatsAppVideo(to, phone_number_id) {
@@ -74,7 +100,7 @@ export async function sendWatsAppVideo(to, phone_number_id) {
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 export async function markAsRead(message_id, phone_number_id) {
@@ -171,7 +197,7 @@ export async function sendWatsAppWithButtons(textResponse, buttons, footer = '',
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 
@@ -197,7 +223,7 @@ export async function sendWatsAppWithList(textResponse, sections, header = '', f
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 export async function sendWatsAppWithRedirectButton(textResponse, file, header = '', footer = '', to, phone_number_id) {
@@ -222,7 +248,7 @@ export async function sendWatsAppWithRedirectButton(textResponse, file, header =
     }
   });
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 export async function sendWhatsAppFileLink(textResponse, file, header = '', footer = '', to, phone_number_id) {
@@ -322,7 +348,7 @@ export function sendWhatsAppOrderForPayment(textResponse, p, reference_id, to, p
     }
   })
 
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 export function sendWhatsAppOrderStatus(textResponse, reference_id, status, description, to, phone_number_id) {
@@ -348,7 +374,7 @@ export function sendWhatsAppOrderStatus(textResponse, reference_id, status, desc
       }
     }
   })
-  callWhatsAppAPI(data, phone_number_id);
+  callWhatsAppFunction(data, phone_number_id);
 }
 
 
