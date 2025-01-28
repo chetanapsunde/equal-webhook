@@ -147,10 +147,6 @@ const handleTextMessage = async (message, from, phone_number_id) => {
             sendWatsAppWithList(response.answer, options, 'How can I help you Today?', 'EqualJustice.ai', from, phone_number_id);
             return;
         }
-    } else {
-        let DFResponse = await getActionFromDFES(message.text.body, from);
-        session.interactions++;
-        saveSession(from, session.threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment, session.interactions);
     }
     if (['restart', 'reset'].includes(message.text.body.toLowerCase())) {
         if (session.agentType == 'assistant') {
@@ -175,6 +171,9 @@ const handleTextMessage = async (message, from, phone_number_id) => {
                         response = await interactWithAssistant(message.text.body, from, session.targetAgent.assistantId, session.threadId);
                         if (response.answer && response.answer != '')
                             response.answer = convertMarkdownToWhatsApp(response.answer);
+                        let DFResponse = await getActionFromDFES(message.text.body, from);
+                        session.interactions++;
+                        saveSession(from, session.threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment, session.interactions);
                     }
                     else if ((session.interactions > 10 && session.payment && session.payment.transaction.status == 'pending') || phone_number_id == '359476970593209')//payment found in redis session
                     {
@@ -183,6 +182,7 @@ const handleTextMessage = async (message, from, phone_number_id) => {
                             let DFResponse = await getActionFromDFES(message.text.body, from);
                             sendWhatsAppOrderForPayment("Please pay to proceed", DFResponse.payload.pricing, reference_id, from, phone_number_id);
                             session.payment.linkSent = true;
+                            session.interactions++;
                             saveSession(from, session.threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment, session.interactions);
                             return;
                         } else {
