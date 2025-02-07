@@ -179,8 +179,15 @@ const handleTextMessage = async (message, from, phone_number_id) => {
                     {
                         if (!session.payment.linkSent){
                             let reference_id = await generateId(8);
+                            let pricing = {
+                                "configName": "LetterGenration",
+                                "tax": 0,
+                                "amount": 100,
+                                "discount": 0,
+                                "sale_amount": 100
+                            }
                             // let DFResponse = await getActionFromDFES(message.text.body, from);
-                            sendWhatsAppOrderForPayment("Please pay to proceed", session.pricing, reference_id, from, phone_number_id);
+                            sendWhatsAppOrderForPayment("Please pay to proceed", pricing, reference_id, from, phone_number_id);
                             session.payment.linkSent = true;
                             session.interactions++;
                             saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.payment, session.interactions);
@@ -314,7 +321,7 @@ const AnalyzeMessage = async (req, res) => {
 };
 
 export const getWhatsAppMsg = async (req, res) => {
-    //logger.info(JSON.stringify(req.body));
+    logger.info(JSON.stringify(req.body));
     if (isStatusMessage(req.body)) {
         let status = req.body.entry[0].changes[0].value.statuses[0]
         if (status.type == 'payment') {
