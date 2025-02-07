@@ -125,15 +125,16 @@ const handleTextMessage = async (message, from, phone_number_id) => {
                 action: DFResponse.payload.action,
                 agentType: DFResponse.payload.agentType,
                 targetAgent: DFResponse.payload.targetAgent,
-                payment: { transaction: { status: 'pending' } }
+                payment: { transaction: { status: 'pending' }, linkSent: false },
+                interactions: 1
             }
             message.text = { "body": "hi" }
-            saveSession(from, threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment);
-            if (DFResponse.payload.pricing && session.agentType == 'assistant') {
-                let reference_id = await generateId(8);
-                sendWhatsAppOrderForPayment("Please pay to proceed", DFResponse.payload.pricing, reference_id, from, phone_number_id);
-                return;
-            }
+            saveSession(from, threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment, session.interactions);
+            // if (DFResponse.payload.pricing && session.agentType == 'assistant') {
+            //     let reference_id = await generateId(8);
+            //     sendWhatsAppOrderForPayment("Please pay to proceed", DFResponse.payload.pricing, reference_id, from, phone_number_id);
+            //     return;
+            // }
             //session.payment = { transaction: { status: 'success' } }
             //updateSessionWithPayment(from, session.payment); 
         }
@@ -166,11 +167,36 @@ const handleTextMessage = async (message, from, phone_number_id) => {
         case types.employee.Offer:
             if ((session && session.targetAgent)) {
                 if (session.agentType == 'assistant') {
-                    if ((session.payment && session.payment.transaction.status == 'success') || phone_number_id == '359476970593209')//payment found in redis session
-                    {
+                    if(session.interactions <= 10 || session.payment.transaction.status == 'success' || phone_number_id == '359476970593209'){
                         response = await interactWithAssistant(message.text.body, from, session.targetAgent.assistantId, session.threadId);
                         if (response.answer && response.answer != '')
                             response.answer = convertMarkdownToWhatsApp(response.answer);
+                        // let DFResponse = await getActionFromDFES(message.text.body, from);
+                        session.interactions++;
+                        saveSession(from, session.threadId, session.action,session.agentType, session.targetAgent, session.payment, session.interactions);
+                    }
+                    else if ((session.interactions > 10 && session.payment && session.payment.transaction.status == 'pending') || phone_number_id == '359476970593209')//payment found in redis session
+                    {
+                        if (!session.payment.linkSent){
+                            let reference_id = await generateId(8);
+                            let pricing = {
+                                "configName": "LetterGenration",
+                                "tax": 0,
+                                "amount": 100,
+                                "discount": 0,
+                                "sale_amount": 100
+                            }
+                            // let DFResponse = await getActionFromDFES(message.text.body, from);
+                            sendWhatsAppOrderForPayment("Please pay to proceed", pricing, reference_id, from, phone_number_id);
+                            session.payment.linkSent = true;
+                            session.interactions++;
+                            saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.payment, session.interactions);
+                            return;
+                        } else {
+                            response = {
+                                answer: `Please complete the payment to proceed further. If you have successfully paid, please wait.`
+                            };
+                        }
                     }
                     else if (session.payment) {
                         response = {
@@ -295,7 +321,7 @@ const AnalyzeMessage = async (req, res) => {
 };
 
 export const getWhatsAppMsg = async (req, res) => {
-    //logger.info(JSON.stringify(req.body));
+    logger.info(JSON.stringify(req.body));
     if (isStatusMessage(req.body)) {
         let status = req.body.entry[0].changes[0].value.statuses[0]
         if (status.type == 'payment') {

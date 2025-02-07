@@ -15,7 +15,7 @@ try {
     logger.log(error);
 }
 // Function to save a session as a JSON object in Redis
-export async function saveSession(phoneNumber, threadId, action, agentType, targetAgent, payment) {
+export async function saveSession(phoneNumber, threadId, action, agentType, targetAgent, payment, interactions) {
     try {
         // Create the session object
         const session = {
@@ -23,7 +23,8 @@ export async function saveSession(phoneNumber, threadId, action, agentType, targ
             action: action,
             agentType: agentType,
             targetAgent: targetAgent,
-            payment: payment
+            payment: payment,
+            interactions: interactions,
         };
 
         // Store the session object as a JSON string in Redis
