@@ -125,11 +125,12 @@ const handleTextMessage = async (message, from, phone_number_id) => {
                 action: DFResponse.payload.action,
                 agentType: DFResponse.payload.agentType,
                 targetAgent: DFResponse.payload.targetAgent,
+                pricing: DFResponse.payload.pricing,
                 payment: { transaction: { status: 'pending' }, linkSent: false },
                 interactions: 1
             }
             message.text = { "body": "hi" }
-            saveSession(from, threadId, DFResponse.payload.action, DFResponse.payload.agentType, DFResponse.payload.targetAgent, session.payment, session.interactions);
+            saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.pricing, session.payment, session.interactions);
             // if (DFResponse.payload.pricing && session.agentType == 'assistant') {
             //     let reference_id = await generateId(8);
             //     sendWhatsAppOrderForPayment("Please pay to proceed", DFResponse.payload.pricing, reference_id, from, phone_number_id);
@@ -164,50 +165,47 @@ const handleTextMessage = async (message, from, phone_number_id) => {
         case types.transaction.FAILED_TRANSACTION:
         case types.employee.Retrenchment:
         case types.travel.Flights:
+            if((session && session.agentType)){
+                response = await getCXResponse(message.text.body, session.targetAgent, session.threadId, 'en');
+            } 
+            else {
+                response = {
+                    answer: `Please send \'Exit\' to start again`
+                }
+            }
+            break;
         case types.employee.Offer:
             if ((session && session.targetAgent)) {
-                if (session.agentType == 'assistant') {
-                    if(session.interactions <= 10 || session.payment.transaction.status == 'success' || phone_number_id == '359476970593209'){
-                        response = await interactWithAssistant(message.text.body, from, session.targetAgent.assistantId, session.threadId);
-                        if (response.answer && response.answer != '')
-                            response.answer = convertMarkdownToWhatsApp(response.answer);
+                if(session.interactions <= 10 || session.payment.transaction.status == 'success' || phone_number_id == '359476970593209'){
+                    response = await interactWithAssistant(message.text.body, from, session.targetAgent.assistantId, session.threadId);
+                    if (response.answer && response.answer != '')
+                        response.answer = convertMarkdownToWhatsApp(response.answer);
+                    // let DFResponse = await getActionFromDFES(message.text.body, from);
+                    session.interactions++;
+                    saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.pricing, session.payment, session.interactions);
+                }
+                else if ((session.interactions > 10 && session.payment && session.payment.transaction.status == 'pending') || phone_number_id == '359476970593209')//payment found in redis session
+                {
+                    if (!session.payment.linkSent){
+                        let reference_id = await generateId(8);
                         // let DFResponse = await getActionFromDFES(message.text.body, from);
+                        sendWhatsAppOrderForPayment("Please pay to proceed", session.pricing, reference_id, from, phone_number_id);
+                        session.payment.linkSent = true;
                         session.interactions++;
-                        saveSession(from, session.threadId, session.action,session.agentType, session.targetAgent, session.payment, session.interactions);
-                    }
-                    else if ((session.interactions > 10 && session.payment && session.payment.transaction.status == 'pending') || phone_number_id == '359476970593209')//payment found in redis session
-                    {
-                        if (!session.payment.linkSent){
-                            let reference_id = await generateId(8);
-                            let pricing = {
-                                "configName": "LetterGenration",
-                                "tax": 0,
-                                "amount": 100,
-                                "discount": 0,
-                                "sale_amount": 100
-                            }
-                            // let DFResponse = await getActionFromDFES(message.text.body, from);
-                            sendWhatsAppOrderForPayment("Please pay to proceed", pricing, reference_id, from, phone_number_id);
-                            session.payment.linkSent = true;
-                            session.interactions++;
-                            saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.payment, session.interactions);
-                            return;
-                        } else {
-                            response = {
-                                answer: `Please complete the payment to proceed further. If you have successfully paid, please wait.`
-                            };
-                        }
-                    }
-                    else if (session.payment) {
+                        saveSession(from, session.threadId, session.action, session.agentType, session.targetAgent, session.pricing, session.payment, session.interactions);
+                        return;
+                    } else {
                         response = {
-                            answer: `Please complete payment to proceed further. If you have successfully paid, Please wait.`
-                        }
+                            answer: `Please complete the payment to proceed further. If you have successfully paid, please wait.`
+                        };
                     }
                 }
-                else
-                    response = await getCXResponse(message.text.body, session.targetAgent, session.threadId, 'en');
+                else if (session.payment) {
+                    response = {
+                        answer: `Please complete payment to proceed further. If you have successfully paid, Please wait.`
+                    }
+                }             
             }
-
             else {
                 response = {
                     answer: `Please send \'Exit\' to start again`
