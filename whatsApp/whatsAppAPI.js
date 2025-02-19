@@ -9,7 +9,7 @@ async function callWhatsAppAPI(data, phone_number_id) {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: `https://graph.facebook.com/v20.0/${phone_number_id}/messages`,
+    url: `https://graph.facebook.com/v22.0/${phone_number_id}/messages`,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': process.env.WhatsApp_Token
@@ -92,7 +92,7 @@ export async function getWAMediaURL(mediaId, phone_number_id) {
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `https://graph.facebook.com/v20.0/${mediaId}?phone_number_id=${phone_number_id}`,
+      url: `https://graph.facebook.com/v22.0/${mediaId}?phone_number_id=${phone_number_id}`,
       headers: {
         'Authorization': process.env.WhatsApp_Token
       }
