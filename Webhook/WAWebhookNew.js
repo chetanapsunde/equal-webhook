@@ -214,7 +214,7 @@ const handleTextMessage = async (message, from, phone_number_id) => {
             break;
         case types.actions.Welcome:
             sendWatsAppWithList(response.answer, options, 'EqualJustice.ai', 'Reply \'Exit\' to start new case.', from, phone_number_id);
-            sendWatsAppVideo(from, phone_number_id);
+            // sendWatsAppVideo(from, phone_number_id);
             return;
         case types.actions.Fallback:
             sendWatsAppWithList(response.answer, options, 'EqualJustice.ai', 'Reply \'Exit\' to start new case.', from, phone_number_id);
