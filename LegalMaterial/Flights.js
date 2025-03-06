@@ -37,14 +37,14 @@ export const FlightsTrainingData = [
     {
         "qId": 6,
         "Question": "Did the airline give you meals and refreshment, hotel accommodation including transfers, and if you are a person with reduced mobility, then you and persons accompanying you are entitled to special attention by the airline?",
-        "Parameter": "did_user_get_refreshment_hotel_accomodation_special_attention_for_person_with_reduced_mobility",
+        "Parameter": "did_user_get_refreshment_and_hotel_accomodation_and_special_attention_for_person_with_reduced_mobility",
         "Condition": "No",
         "LegalTrainingMaterial": "The airline did not offer me adequate refreshments, hotel accommodation and transfers, and other facilities upon delay of the alternate flight due to denial of boarding to me of my original flight which was scheduled to depart within 8pm to 3am. This is a breach of the requirements under DGCA guidelines.\nThe airline should compensate for the food and refreshment, and additionally compensate me and the person accompanying me for the non-provision of hotel accommodation and for any inconvenience caused."
     },
     {
         "qId": 7,
         "Question": "Did the airline give you meals and refreshment, and if you are a person with reduced mobility, then you and persons accompanying you are entitled to special attention by the airline?",
-        "Parameter": "did_user_get_refreshment_special_attention_for_person_with_reduced_mobility",
+        "Parameter": "did_user_get_refreshment_and_special_attention_for_person_with_reduced_mobility",
         "Condition": "No",
         "LegalTrainingMaterial": "The airline did not offer me adequate refreshments and other facilities upon delay of the alternate flight due to denial of boarding to me. This is a breach of the requirements under DGCA guidelines.\nThe airline should reimburse the amount spent for purchasing food and refreshment, and additionally compensate me and the person accompanying me for any inconvenience caused."
     },
@@ -68,6 +68,27 @@ export const FlightsTrainingData = [
         "Parameter": "user_given_ticket_refund_plus_amount_equal_to_400_percent_of_the_booked_oneway_fare_subject_to_maximum_Indian_Rupees_20000",
         "Condition": "No",
         "LegalTrainingMaterial": "I was not provided with the full refund of my ticket plus compensation equivalent to 400% of booked one-way basic fare plus airline fuel charge, subject to a maximum of INR 20,000, which is a breach of DGCA guidelines. Airline is directly to immediately pay me this compensation along with an interest of 9% per annum for the delay in the payment of compensation."
+    },
+    {
+        "qId": 39,
+        "Question": "Were you given a full refund of your ticket booked plus an additional amount of compensation equal to 400% of booked one-way basic fare plus airline fuel charge, subject to a maximum of INR 20,000?",
+        "Parameter": "user_received_full_refund_plus_compensation_400_percent_of_oneway_full_fare_subject_to_maximum_Indian_Rupees_20000",
+        "Condition": "No",
+        "LegalTrainingMaterial": "I was not provided with the full refund of the original flight and an additional  compensation equivalent to 400% of booked one-way basic fare plus airline fuel charge, subject to a maximum of INR 20,000, which is a breach of DGCA guidelines. Airline is directly to immediately pay me this compensation along with an interest of 9% per annum for the delay in the payment of compensation."
+    },
+    {
+        "qId": 40,
+        "Question": "Were you given an amount equal to 200% of booked one-way basic fare plus airline fuel charge for the first flight of the first leg, subject to a maximum of INR 10,000?",
+        "Parameter": "user_given_amount_equal_to_200_percent_of_the_booked_oneway_fare_of_first_flight_for_first_leg_subject_to_maximum_Indian_Rupees_10000",
+        "Condition": "No",
+        "LegalTrainingMaterial": "I was not provided with the compensation equivalent to 200% of booked one-way basic fare plus airline fuel charge for the first flight of the first leg, subject to a maximum of INR 10,000, which is a breach of DGCA guidelines. Airline is directed to immediately pay me this compensation along with an interest of 9% per annum for the delay in the payment of compensation."
+    },
+    {
+        "qId": 41,
+        "Question": "Were you given an amount of compensation equal to 400% of booked one-way basic fare plus airline fuel charge for the first flight of the first leg, subject to a maximum of INR 20,000?",
+        "Parameter": "user_given_amount_equal_to_400_percent_of_the_booked_oneway_fare_of_first_flight_for_first_leg_subject_to_maximum_Indian_Rupees_20000",
+        "Condition": "No",
+        "LegalTrainingMaterial": "I was not provided with the compensation equivalent to 400% of booked one-way basic fare plus airline fuel charge, subject to a maximum of INR 20,000, which is a breach of DGCA guidelines. Airline is directed to immediately pay me this compensation along with an interest of 9% per annum for the delay in the payment of compensation."
     },
     {
         "qId": 11,
@@ -116,7 +137,7 @@ export const FlightsTrainingData = [
         "Question": "In addition to the full refund of the air ticket, were you a compensation of INR 7,500 or booked one-way basic fare plus airline fuel charge, whichever is less?\nYes\n\nNo",
         "Parameter": "compensation_for_cancelation_of_flight_7500",
         "Condition": "No",
-        "LegalTrainingMaterial": "As per DGCA guidelines, the user is entitled to a compensation of INR 7.500 or booked one-way basic fare plus airline fuel charge, whichever is less. As the user has not been given this compensation, the airline is in breach of the DGCA guidelines, and must immediately pay the compensation."
+        "LegalTrainingMaterial": "As per DGCA guidelines, the user is entitled to a compensation of INR 7,500 or booked one-way basic fare plus airline fuel charge, whichever is less. As the user has not been given this compensation, the airline is in breach of the DGCA guidelines, and must immediately pay the compensation."
     },
     {
         "qId": 18,
@@ -124,6 +145,13 @@ export const FlightsTrainingData = [
         "Parameter": "compensation_for_cancelation_of_flight_10000",
         "Condition": "No",
         "LegalTrainingMaterial": "As per DGCA guidelines, the user is entitled to a compensation of INR 10,000 or booked one-way basic fare plus airline fuel charge, whichever is less. As the user has not been given this compensation, the airline is in breach of the DGCA guidelines, and must immediately pay the compensation."
+    },
+    {
+        "qId": 42,
+        "Question": "Do you want to challenge the reason?",
+        "Parameter": "user_wants_to_challenge_the_reason_for_flight_delay",
+        "Condition": "Yes",
+        "LegalTrainingMaterial": "The user asserts that the airline has given false reasons to delay the flight, as the real reason would have made the airline to refund the ticket price and pay compensation to the user. The onus is on the airline to prove that the reason given for delay is true and bonafide. If the reasons are sensitive and confidential, the same could be made available for physical inspection of the user with sensitive and non user related reasons redacted.\n\nIn addition to the compensation specified by DGCA as given in the letter, additionally, as per The Carriage By Air Act, 1972, the user is also entitled to damages of up to Rs. 80,000 for delay in the carriage of air passengers."
     },
     {
         "qId": 19,
@@ -229,6 +257,13 @@ export const FlightsTrainingData = [
         "Parameter": "delayed_damaged_baggage_did_not_receive_full_special_declared_compensation_now_claim_full",
         "Condition": "Yes",
         "LegalTrainingMaterial": "As my baggage was damaged while in the control or possession of the Airline, as per the provisions of The Carriage By Air Act, 1972 and other legal requirements, I am entitled to the full amount that I have declared as value of content in the baggage at the time of baggage check-in. Airline is directed to immediately release the full compensation along with the interest of 9% per annum from the date of lost baggage till the date of full receipt of the compensation. The onus of proof is on the airline to demonstrate that:\n(a) the value of the baggage and the content of the baggage was less than the value provided in the special declaration,\n(b) the damage was caused due to an inherent defect, quality or vice of the baggage;\n(c) the airline, its servants and agents took all measures that could reasonably be required to avoid the damage or that it was impossible for it or them to take such measures;\n(d) the damages were caused or contributed to by the negligence or other wrongful act or omission of the user / passenger."
+    },
+    {
+        "qId": 34,
+        "Question": "Do you want to claim the full compensation of Rs. 25,000?",
+        "Parameter": "delayed_damaged_baggage_did_not_receive_full_standard_Rupees_25000_compensation_now_claim_full",
+        "Condition": "Yes",
+        "LegalTrainingMaterial": "As my baggage is damaged while in the control or possession of the Airline, as per the provisions of The Carriage By Air Act, 1972 and other legal requirements, I am entitled to the full amount of Rs. 25,000 per passenger for the lost baggage. Airline is directed to immediately release the full compensation along with the interest of 9% per annum from the date of lost baggage till the date of full receipt of the compensation. The onus of proof is on the airline to demonstrate that:\n(a) the damage was caused due to an inherent defect, quality or vice of the baggage;\n(b) the airline, its servants and agents took all measures that could reasonably be required to avoid the damage or that it was impossible for it or them to take such measures;\n(c) the damages were caused or contributed to by the negligence or other wrongful act or omission of the user / passenger."
     },
     {
         "qId": 35,

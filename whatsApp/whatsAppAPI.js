@@ -12,7 +12,7 @@ async function callWhatsAppAPI(data, phone_number_id) {
     url: `https://graph.facebook.com/v22.0/${phone_number_id}/messages`,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': process.env.WhatsApp_Token
+      'Authorization': `Bearer ${process.env.WhatsApp_Token}`
     },
     data: data
   };
@@ -23,6 +23,15 @@ async function callWhatsAppAPI(data, phone_number_id) {
     })
     .catch((error) => {
       logger.error(error);
+      if (error.response) {
+        logger.error(`Response data: ${JSON.stringify(error.response.data)}`);
+        logger.error(`Response status: ${error.response.status}`);
+        logger.error(`Response headers: ${JSON.stringify(error.response.headers)}`);
+      } else if (error.request) {
+        logger.error(`No response received: ${error.request}`);
+      } else {
+        logger.error(`Request setup error: ${error.message}`);
+      }
     });
 }
 
