@@ -33,6 +33,7 @@ export async function saveSession(phoneNumber, threadId, action, agentType, targ
             EX: 7200  // Expiration time in seconds (2 hours)
         });
         console.log(`Session saved for phone number: ${phoneNumber}`);
+        console.log(session);
     } catch (error) {
         console.error('Error saving session to Redis:', error);
         return null;
